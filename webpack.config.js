@@ -1,40 +1,57 @@
-const { resolve } = require('path');
-const path = require('path')
-const HtmlWebPackPlugin = require('html-webpack-plugin');
+const { resolve } = require("path");
+const path = require("path");
+const HtmlWebPackPlugin = require("html-webpack-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const webpack = require("webpack");
 
-const isDevelopment = process.env.NODE_ENV != 'production'
+const isDevelopment = process.env.NODE_ENV != "production";
+
 
 module.exports = {
-    module : isDevelopment ? 'development' : 'production',
-    devtool : isDevelopment ?  'eval-source-map' : 'source-map',
-    entry: path.resolve(__dirname, 'src', 'index.jsx'),
-    output : {
-        path : resolve(__dirname, 'dist'),
-        filename : 'bundle.js'
-    },
-    resolve : {
-        extensions : ['.js', '.jsx']
-    },
-    devServer : {
-        contentBase : path.resolve(__dirname, 'public')
-    },
-    plugins :[
-        new HtmlWebPackPlugin({
-            template: path.resolve(__dirname, 'public', 'index.html')
-        })
+  module: isDevelopment ? "development" : "production",
+  devtool: isDevelopment ? "eval-source-map" : "source-map",
+  entry: path.resolve(__dirname, "src", "index.jsx"),
+  output: {
+    path: resolve(__dirname, "dist"),
+    filename: "bundle.js",
+  },
+  resolve: {
+    extensions: [".js", ".jsx"],
+  },
+  devServer: {
+    contentBase: path.resolve(__dirname, "public"),
+    hot: true,
+    hotOnly: true,
+  },
+  plugins: [
+    isDevelopment && new ReactRefreshWebpackPlugin(),
+    new HtmlWebPackPlugin({
+      template: path.resolve(__dirname, "public", "index.html"),
+    }),
+  ].filter(Boolean),
+  module: {
+    rules: [
+      {
+        test: /\.jsx$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "babel-loader",
+            options: {
+              plugins: [
+                isDevelopment &&
+                  process.env.FAST_REFRESH &&
+                  require.resolve("react-refresh/babel"),
+              ].filter(Boolean),
+            },
+          },
+        ],
+      },
+      {
+        test: /\.scss$/,
+        exclude: /node_modules/,
+        use: ["style-loader", "css-loader", "sass-loader"],
+      },
     ],
-    module : {
-        rules : [
-            {
-                test: /\.jsx$/,
-                exclude : /node_modules/,
-                use : 'babel-loader'
-            }, 
-            {
-                test: /\.scss$/,
-                exclude : /node_modules/,
-                use : ['style-loader', 'css-loader', 'sass-loader']
-            }
-        ]
-    }
+  },
 };
