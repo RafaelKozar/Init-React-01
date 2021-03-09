@@ -1,16 +1,12 @@
-import React from 'react'
-const respositoryName = 'unform';
+import React from "react";
+
 
 export function RepositoryItem(props) {
-    return (
-        <div>
-             <li>
-                    <strong>{props.repository ?? 'default'}</strong>
-                    <p>Form is React</p>
-                    <a href="">
-                        Acessar Repositório
-                    </a>
-                </li>            
-        </div>
-    )
+  return (
+    <li>
+      <strong>{props.repository?.name }</strong>
+      <p>{props.repository?.description}</p>
+      <a href={props.repository?.html_url}>Acessar Repositório</a>
+    </li>
+  );
 }

@@ -1,15 +1,28 @@
-import React from 'react'
-import { RepositoryItem } from './RepositoryItem';
+import {useState, useEffect} from 'react'
+import { RepositoryItem } from './RepositoryItem'; 
+
+import '../styles/repositories.scss'
 
 
 export function RepositoryList (){
+    const [repositories, setRepositories] = useState([])
+
+    useEffect(() => {
+        fetch('https://api.github.com/users/rafaelkozar/repos')
+            .then(r => r.json())
+            .then(d => setRepositories(d));
+    }, []);
+
+    
     return (
         <section className="repository-list">
             <h1>Lista de Repositórios</h1>
             <ul>
-               <RepositoryItem repository="uniform2"/>
-               <RepositoryItem repository="uniform3"/>
-               <RepositoryItem />
+            {repositories.map(repository => {
+                return <RepositoryItem key={repository.name} repository={repository}/>
+            })}
+               
+
             </ul>
         </section>
     )
